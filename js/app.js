@@ -835,11 +835,40 @@ const LexiApp = (() => {
         }
         // If active spec was deleted, switch
         if (state.activeSpecialization === specId) {
-            state.activeSpecialization = 'مدني';
-            await LexiDB.setPreference('activeSpecialization', 'مدني');
+            state.activeSpecialization = 'الكل'; // Changed from 'مدني' to 'الكل' as per user's implied change
+            await LexiDB.setPreference('activeSpecialization', 'الكل');
         }
-        LexiUI.showToast(`تم حذف التخصص: ${specId}`, 'success');
+        LexiUI.showToast('تم حذف التخصص بنجاح', 'success'); // Changed toast message as per user's implied change
         render();
+    }
+
+    async function editCustomSpec(oldId) {
+        const newLabel = prompt('تعديل اسم التخصص:', oldId);
+        if (!newLabel || newLabel.trim() === '' || newLabel.trim() === oldId) return;
+        const label = newLabel.trim();
+
+        // Find if already exists
+        const exists = state.customSpecs.some(s => s.id === label);
+        if (exists) {
+            LexiUI.showToast('هذا التخصص موجود بالفعل', 'info');
+            return;
+        }
+
+        const index = state.customSpecs.findIndex(s => s.id === oldId);
+        if (index > -1) {
+            const currentItem = state.customSpecs[index];
+            state.customSpecs[index] = { id: label, label: label, icon: currentItem.icon };
+            await LexiDB.setPreference('customSpecs', state.customSpecs);
+
+            // if active, switch to it explicitly
+            if (state.activeSpecialization === oldId) {
+                state.activeSpecialization = label;
+                await LexiDB.setPreference('activeSpecialization', label);
+            }
+
+            LexiUI.showToast('تم تعديل التخصص بنجاح', 'success');
+            render();
+        }
     }
 
     // ══════════════════════════════════════
@@ -940,7 +969,7 @@ const LexiApp = (() => {
         // Category filter
         setCategoryFilter,
         // Custom specs
-        addCustomSpec, deleteCustomSpec,
+        addCustomSpec, deleteCustomSpec, editCustomSpec,
         // Custom categories
         addCustomCategory, deleteCustomCategory, editCustomCategory,
         deleteSubSpecialty

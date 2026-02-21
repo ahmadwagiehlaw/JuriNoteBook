@@ -238,6 +238,7 @@ const LexiUI = (() => {
           </div>
         </div>
         <div class="header-actions">
+          <button class="theme-toggle" onclick="LexiApp.showAboutModal()" title="حول التطبيق">ℹ️</button>
           <button class="theme-toggle" onclick="LexiApp.toggleTheme()" title="تبديل المظهر">
             ${isDark ? '☀️' : '🌙'}
           </button>
@@ -345,6 +346,7 @@ const LexiUI = (() => {
           <div class="header-subtitle">التخصص: ${activeSpec}</div>
         </div>
         <div class="header-actions">
+          <button class="theme-toggle" onclick="LexiApp.showAboutModal()" title="حول التطبيق">ℹ️</button>
           <button class="theme-toggle" onclick="LexiApp.toggleTheme()">
             ${isDark ? '☀️' : '🌙'}
           </button>
@@ -446,6 +448,7 @@ const LexiUI = (() => {
           <div class="header-subtitle">تخصيص مفكرة القاضي</div>
         </div>
         <div class="header-actions">
+          <button class="theme-toggle" onclick="LexiApp.showAboutModal()" title="حول التطبيق">ℹ️</button>
           <button class="theme-toggle" onclick="LexiApp.toggleTheme()">
             ${isDark ? '☀️' : '🌙'}
           </button>
@@ -498,7 +501,10 @@ const LexiUI = (() => {
                   <span class="spec-toggle-dot" style="background:var(--chip-color)"></span>
                   <span class="spec-toggle-label">${spec.icon} ${spec.label}</span>
                 </label>
-                ${isCustom ? `<button class="btn-icon-mini" onclick="LexiApp.deleteCustomSpec('${escapeHtml(spec.id)}')" title="حذف">×</button>` : ''}
+                ${isCustom ? `
+                  <button class="btn-icon-mini btn-edit-mini" onclick="LexiApp.editCustomSpec('${escapeHtml(spec.id)}')" title="تعديل">✏️</button>
+                  <button class="btn-icon-mini" onclick="LexiApp.deleteCustomSpec('${escapeHtml(spec.id)}')" title="حذف">×</button>
+                ` : ''}
               </div>`;
     }).join('')}
           </div>

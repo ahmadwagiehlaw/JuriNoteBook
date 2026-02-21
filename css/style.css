@@ -523,27 +523,32 @@ body::before {
 
 /* Sidebar Welcome Badge (Gold Theme) */
 .sidebar-welcome-badge {
-  background: linear-gradient(90deg, rgba(201, 169, 105, 0.05) 0%, rgba(30, 32, 44, 0.3) 100%);
-  border: 1px solid rgba(201, 169, 105, 0.15);
+  background: linear-gradient(135deg, rgba(201, 169, 105, 0.1) 0%, rgba(30, 32, 44, 0.6) 100%);
+  border: 1px solid rgba(201, 169, 105, 0.3);
   border-right: 4px solid var(--accent-gold);
   border-radius: var(--radius-lg);
-  padding: var(--space-md) var(--space-md);
-  margin: 0 var(--space-lg) var(--space-md) var(--space-lg);
+  padding: var(--space-lg);
+  margin: var(--space-md) var(--space-lg) var(--space-xl) var(--space-lg);
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  align-items: center;
+  text-align: center;
+  gap: 8px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
 }
 
 .sidebar-welcome-name {
   color: var(--accent-gold);
   font-family: var(--font-arabic);
-  font-weight: 700;
-  font-size: 1.05rem;
+  font-weight: 800;
+  font-size: 1.35rem;
+  letter-spacing: 0.5px;
 }
 
 .sidebar-welcome-workplace {
-  color: var(--text-tertiary);
-  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+  font-weight: 500;
 }
 
 /* Sidebar Category Tabs */
