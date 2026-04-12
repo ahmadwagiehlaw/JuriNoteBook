@@ -456,6 +456,9 @@ const LexiUI = (() => {
         <button class="tab-btn ${activeTab === 'general' ? 'active' : ''}" onclick="LexiApp.setSettingsTab('general')">
           ${Icons.user} <span>عام</span>
         </button>
+        <button class="tab-btn ${activeTab === 'categories' ? 'active' : ''}" onclick="LexiApp.setSettingsTab('categories')">
+          ${Icons.bookmark} <span>التصنيفات</span>
+        </button>
         <button class="tab-btn ${activeTab === 'display' ? 'active' : ''}" onclick="LexiApp.setSettingsTab('display')">
           ${Icons.palette} <span>المظهر</span>
         </button>
@@ -497,6 +500,27 @@ const LexiUI = (() => {
             </div>
           </div>
 
+          <!-- Default Specialization -->
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">${Icons.scale}<span>التخصص الافتراضي</span></div>
+            <div class="spec-chips">
+              ${SPECIALIZATIONS.map(spec => `
+                <button class="spec-chip ${data.activeSpec === spec.id ? 'active' : ''}" data-spec="${spec.id}" onclick="LexiApp.setDefaultSpecialization('${escapeHtml(spec.id)}')">
+                  <span class="chip-dot"></span>${spec.label}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+          
+          <!-- About App (IP Attribution) -->
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">ℹ️<span>حول التطبيق</span></div>
+            <p class="text-muted mb-md" style="font-size:0.85rem">معلومات التطبيق، حقوق الملكية الفكرية، والتواصل مع المطور</p>
+            <button class="btn btn-ghost" onclick="LexiApp.showAboutModal()">ℹ️<span>عرض بيانات التطبيق والملكية الفكرية</span></button>
+          </div>
+        `;
+      case 'categories':
+        return `
           <!-- Specializations Management -->
           <div class="glass-card mb-md p-md">
             <div class="settings-group-title">${Icons.scale}<span>إدارة التخصصات</span></div>
@@ -523,18 +547,6 @@ const LexiUI = (() => {
               <input class="form-input" type="text" id="new-spec-name" placeholder="التخصص الجديد..." style="flex:1">
               <input class="form-input" type="text" id="new-spec-icon" placeholder="أيقونة" style="width:60px;text-align:center">
               <button class="btn btn-primary btn-sm" onclick="LexiApp.addCustomSpec()">${Icons.plus}<span>إضافة</span></button>
-            </div>
-          </div>
-
-          <!-- Default Specialization -->
-          <div class="glass-card mb-md p-md">
-            <div class="settings-group-title">${Icons.scale}<span>التخصص الافتراضي</span></div>
-            <div class="spec-chips">
-              ${SPECIALIZATIONS.map(spec => `
-                <button class="spec-chip ${data.activeSpec === spec.id ? 'active' : ''}" data-spec="${spec.id}" onclick="LexiApp.setDefaultSpecialization('${escapeHtml(spec.id)}')">
-                  <span class="chip-dot"></span>${spec.label}
-                </button>
-              `).join('')}
             </div>
           </div>
 
