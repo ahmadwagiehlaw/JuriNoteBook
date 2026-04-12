@@ -129,13 +129,14 @@ const LexiApp = (() => {
     }
 
     async function registerSW() {
-        // تم الإيقاف مؤقتاً أثناء التطوير لمنع مشكلة الكاش (Cache)
-        /*
         if ('serviceWorker' in navigator) {
-            try { await navigator.serviceWorker.register('./sw.js'); } catch (e) { }
+            try { 
+                await navigator.serviceWorker.register('./sw.js'); 
+                console.log("Service Worker Registered Successfully");
+            } catch (e) { 
+                console.error("SW Registration Failed:", e); 
+            }
         }
-        */
-        console.log("Service Worker registration bypassed for development.");
     }
 
     // ══════════════════════════════════════
