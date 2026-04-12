@@ -235,6 +235,56 @@ const FirebaseService = (() => {
         return `${base}#/shared/${currentUser.uid}`;
     }
 
+    // ── Admin & Compliance Methods ──
+    
+    // 1. Delete User Account & Data (Required for Google Play)
+    async function deleteUserAccount() {
+        if (!currentUser) throw new Error('لا يوجد مستخدم مسجل');
+        const uid = currentUser.uid;
+        
+        // Delete user document from Firestore (Soft delete or full document removal)
+        await db.collection('users').doc(uid).delete();
+        
+        // Delete auth account
+        await currentUser.delete();
+        currentUser = null;
+    }
+
+    // 2. Check if Current User is Admin
+    async function checkIsAdmin() {
+        if (!currentUser) return false;
+        try {
+            const adminDoc = await db.collection('admins').doc(currentUser.uid).get();
+            return adminDoc.exists;
+        } catch (e) {
+            return false;
+        }
+    }
+
+    // 3. Fetch All Users for Admin Dashboard
+    async function getAllUsersForAdmin() {
+        const isAdmin = await checkIsAdmin();
+        if (!isAdmin) throw new Error('Access Denied: Not an admin');
+        
+        const snapshot = await db.collection('users').orderBy('updatedAt', 'desc').get();
+        return snapshot.docs.map(doc => ({
+            uid: doc.id,
+            ...doc.data(),
+            updatedAt: doc.data().updatedAt?.toDate ? doc.data().updatedAt.toDate() : new Date()
+        }));
+    }
+
+    // 4. Admin Action: Wipe User Data
+    async function deleteUserDataAsAdmin(targetUid) {
+        const isAdmin = await checkIsAdmin();
+        if (!isAdmin) throw new Error('Access Denied: Not an admin');
+        
+        // مسح بيانات المستخدم (Profile)
+        await db.collection('users').doc(targetUid).delete();
+        
+        // ملاحظة: مسح الـ Auth نفسه يتطلب Cloud Functions، لكن مسح الـ Firestore يعطل حسابه في التطبيق ويمسح ملفه.
+    }
+
     // ── Public API ──
     return {
         init,
@@ -253,6 +303,10 @@ const FirebaseService = (() => {
         saveUserProfile,
         setPublicSharing,
         getSharedNotes,
-        getShareLink
+        getShareLink,
+        deleteUserAccount,
+        checkIsAdmin,
+        getAllUsersForAdmin,
+        deleteUserDataAsAdmin
     };
 })();

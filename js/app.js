@@ -15,6 +15,7 @@ const LexiApp = (() => {
         searchQuery: '',
         searchTimeout: null,
         user: null,
+        isAdmin: false,
         isOfflineMode: false,
         isSharedView: false,
         sharedUid: null,
@@ -78,8 +79,13 @@ const LexiApp = (() => {
                 FirebaseService.onAuthStateChanged(async (user) => {
                     state.user = user;
                     if (user) {
+                        state.isAdmin = await FirebaseService.checkIsAdmin();
                         hideAuthScreen();
-                        await FirebaseService.saveUserProfile();
+                        try {
+                            await FirebaseService.saveUserProfile();
+                        } catch (e) {
+                            console.warn('Failed to save user profile due to permissions/network, continuing:', e.message);
+                        }
                         // Auto-sync from cloud on login
                         try {
                             const cloudNotes = await FirebaseService.syncNotesFromCloud();
@@ -119,9 +125,13 @@ const LexiApp = (() => {
     }
 
     async function registerSW() {
+        // تم الإيقاف مؤقتاً أثناء التطوير لمنع مشكلة الكاش (Cache)
+        /*
         if ('serviceWorker' in navigator) {
-            try { await navigator.serviceWorker.register('./sw.js'); } catch (e) { /* skip */ }
+            try { await navigator.serviceWorker.register('./sw.js'); } catch (e) { }
         }
+        */
+        console.log("Service Worker registration bypassed for development.");
     }
 
     // ══════════════════════════════════════
@@ -268,6 +278,41 @@ const LexiApp = (() => {
         }
     }
 
+    // ── Google Play Compliance: Account Deletion ──
+    async function promptDeleteAccount() {
+        const confirmDelete = confirm('تنبيه خطير: هل أنت متأكد من رغبتك في حذف حسابك وجميع بياناتك نهائياً؟ هذا الإجراء لا يمكن التراجع عنه.');
+        if (confirmDelete) {
+            try {
+                await FirebaseService.deleteUserAccount();
+                state.user = null;
+                state.notes = [];
+                LexiUI.showToast('تم حذف الحساب بنجاح', 'success');
+                showAuthScreen();
+            } catch (err) {
+                console.error(err);
+                if (err.code === 'auth/requires-recent-login') {
+                    LexiUI.showToast('يرجى تسجيل الخروج والدخول مجدداً لتأكيد هويتك قبل الحذف', 'error');
+                } else {
+                    LexiUI.showToast('حدث خطأ أثناء حذف الحساب', 'error');
+                }
+            }
+        }
+    }
+
+    // ── Admin Actions ──
+    async function deleteUserByAdmin(uid) {
+        const confirmDelete = confirm('هل أنت متأكد من مسح جميع بيانات وملف هذا المستخدم من قاعدة البيانات؟ لا يمكن التراجع.');
+        if (confirmDelete) {
+            try {
+                await FirebaseService.deleteUserDataAsAdmin(uid);
+                LexiUI.showToast('تم مسح بيانات المستخدم بنجاح', 'success');
+                navigate('admin'); // إعادة تحميل اللوحة
+            } catch (err) {
+                LexiUI.showToast('حدث خطأ. تأكد من تحديث Rules في فايربيس', 'error');
+            }
+        }
+    }
+
     function goToLogin() {
         showAuthScreen();
     }
@@ -350,7 +395,8 @@ const LexiApp = (() => {
                     state.userName,
                     state.customSpecs,
                     state.customCategories,
-                    state.workplace
+                    state.workplace,
+                    state.isAdmin
                 );
                 break;
         }
@@ -938,9 +984,10 @@ const LexiApp = (() => {
 
     return {
         init, navigate,
-        // Auth
+        // Auth & Admin
         signInWithGoogle, handleEmailLogin, handleEmailRegister,
         showRegister, showLogin, skipAuth, handleSignOut, goToLogin,
+        promptDeleteAccount, deleteUserByAdmin,
         // Theme
         toggleTheme, setTheme,
         // Specialization

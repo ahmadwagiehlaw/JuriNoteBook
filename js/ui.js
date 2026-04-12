@@ -32,6 +32,7 @@ const LexiUI = (() => {
     cloud: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 10h-1.26A8 8 0 109 20h9a5 5 0 000-10z"/></svg>`,
     cloudOff: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22.61 16.95A5 5 0 0 0 18 10h-1.26a8 8 0 0 0-7.05-6M5 5a8 8 0 0 0 4 15h9a5 5 0 0 0 1.7-.3"/><line x1="1" y1="1" x2="23" y2="23"/></svg>`,
     user: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>`,
+    shield: `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>`,
   };
 
   const DEFAULT_CATEGORIES = [
@@ -109,7 +110,7 @@ const LexiUI = (() => {
   }
 
   // ═══════ SIDEBAR ═══════
-  function renderSidebar(activeSpec, activeView, noteCounts, user, enabledSpecs, userName, customSpecs, activeCategory, customCategories, workplace) {
+  function renderSidebar(activeSpec, activeView, noteCounts, user, enabledSpecs, userName, customSpecs, activeCategory, customCategories, workplace, isAdmin = false) {
     const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
     const SPECIALIZATIONS = getAllSpecs(customSpecs);
     // Filter specs: only show enabled ones (default: all enabled)
@@ -203,6 +204,12 @@ const LexiUI = (() => {
           ${Icons.settings}
           <span>الإعدادات</span>
         </button>
+        ${isAdmin ? `
+        <button class="nav-item ${activeView === 'admin' ? 'active' : ''}" onclick="LexiApp.navigate('admin')">
+          ${Icons.shield}
+          <span>لوحة الإدارة</span>
+        </button>
+        ` : ''}
       </nav>
 
       <div class="sidebar-footer">
@@ -434,7 +441,7 @@ const LexiUI = (() => {
   }
 
   // ═══════ SETTINGS ═══════
-  function renderSettingsPage(preferences, subSpecialties, user, enabledSpecs, userName, customSpecs, customCategories, workplace) {
+  function renderSettingsPage(preferences, subSpecialties, user, enabledSpecs, userName, customSpecs, customCategories, workplace, isAdmin = false) {
     const activeSpec = preferences.activeSpecialization || 'مدني';
     const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
     const SPECIALIZATIONS = getAllSpecs(customSpecs);
@@ -684,9 +691,11 @@ const LexiUI = (() => {
               ${Icons.trash}<span>حذف الحساب وبياناتي نهائياً</span>
             </button>
             
+            ${isAdmin ? `
             <button class="btn btn-ghost" style="justify-content: flex-start;" onclick="LexiApp.openAdminDashboard()">
               ${Icons.settings}<span>دخول لوحة تحكم المشرف (Admin)</span>
             </button>
+            ` : ''}
           </div>
         </div>
       </div>
@@ -807,11 +816,84 @@ const LexiUI = (() => {
     return div.innerHTML;
   }
 
+  // ═══════ ADMIN DASHBOARD ═══════
+  function renderAdminDashboard(users) {
+    const totalUsers = users.length;
+    const publicUsers = users.filter(u => u.isPublic).length;
+
+    return `
+      <div class="header-bar">
+        <div>
+          <h2>لوحة تحكم المشرف</h2>
+          <div class="header-subtitle">إدارة النظام والمستخدمين</div>
+        </div>
+        <div class="header-actions">
+          <button class="hamburger" onclick="LexiApp.toggleSidebar()">${Icons.menu}</button>
+        </div>
+      </div>
+
+      <div class="stats-row">
+        <div class="stat-card glass-card">
+          <div class="stat-value">${totalUsers}</div>
+          <div class="stat-label">إجمالي المستخدمين</div>
+        </div>
+        <div class="stat-card glass-card">
+          <div class="stat-value">${publicUsers}</div>
+          <div class="stat-label">حسابات المشاركة العامة</div>
+        </div>
+        <div class="stat-card glass-card" style="border-bottom: 3px solid var(--accent-red)">
+          <div class="stat-value" style="color: var(--accent-red)">${Icons.shield}</div>
+          <div class="stat-label">صلاحيات المشرف العام</div>
+        </div>
+      </div>
+
+      <div class="glass-card mt-md">
+        <div class="settings-group" style="margin-bottom:0">
+          <div class="settings-group-title">${Icons.user}<span>قائمة المستخدمين المسجلين</span></div>
+          <div style="overflow-x: auto; margin-top: 15px;">
+            <table style="width: 100%; border-collapse: collapse; text-align: right; font-size: 0.9rem;">
+              <thead>
+                <tr style="background: var(--bg-hover); border-bottom: 1px solid var(--border);">
+                  <th style="padding: 12px 10px;">المستخدم</th>
+                  <th style="padding: 12px 10px;">البريد الإلكتروني</th>
+                  <th style="padding: 12px 10px;">آخر نشاط</th>
+                  <th style="padding: 12px 10px;">إجراءات</th>
+                </tr>
+              </thead>
+              <tbody>
+                ${users.map(u => `
+                  <tr style="border-bottom: 1px solid var(--border);">
+                    <td style="padding: 10px;">
+                      <strong>${escapeHtml(u.displayName || 'غير محدد')}</strong><br>
+                      <span style="font-size:0.8rem;color:var(--text-tertiary)">${u.isPublic ? 'عام 🟢' : 'خاص 🔴'}</span>
+                    </td>
+                    <td style="padding: 10px;" dir="ltr">${u.email || 'غير محدد'}</td>
+                    <td style="padding: 10px;" dir="ltr">${u.updatedAt ? u.updatedAt.toLocaleDateString() : '—'}</td>
+                    <td style="padding: 10px;">
+                      <div class="flex gap-sm">
+                        <button class="btn btn-ghost btn-sm" onclick="LexiUI.copyToClipboard('${u.email}', this)" title="نسخ البريد">
+                          ${Icons.copy}
+                        </button>
+                        <button class="btn btn-ghost btn-sm" style="color:var(--accent-red)" onclick="LexiApp.deleteUserByAdmin('${u.uid}')" title="مسح بيانات المستخدم">
+                          ${Icons.trash}
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    `;
+  }
+
   return {
     Icons, DEFAULT_CATEGORIES, getAllCategories, DEFAULT_SPECIALIZATIONS, getAllSpecs,
     showToast, copyToClipboard,
     renderSidebar, renderHomePage, renderNoteCard, renderAddPage,
     renderSettingsPage, renderAboutModal, renderDeleteModal, renderShareModal, renderSharedView,
-    formatDate, escapeHtml
+    renderAdminDashboard, formatDate, escapeHtml
   };
 })();
