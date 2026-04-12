@@ -670,6 +670,28 @@ const LexiUI = (() => {
         </div>
       </div>
 
+      ${user ? `
+      <div class="glass-card mb-md" style="border: 1px solid rgba(255, 69, 58, 0.3);">
+        <div class="settings-group" style="margin-bottom:0">
+          <div class="settings-group-title" style="color: var(--accent-red) !important;">
+            ${Icons.lock}
+            <span>إدارة الحساب والأمان</span>
+          </div>
+          <p class="text-muted mb-md" style="font-size:0.85rem">إعدادات متقدمة لإدارة حسابك وبياناتك المرفوعة على خوادم التطبيق.</p>
+          
+          <div style="display: flex; flex-direction: column; gap: 10px;">
+            <button class="btn btn-ghost" style="color: var(--accent-red); border-color: rgba(255,69,58,0.2); justify-content: flex-start;" onclick="LexiApp.promptDeleteAccount()">
+              ${Icons.trash}<span>حذف الحساب وبياناتي نهائياً</span>
+            </button>
+            
+            <button class="btn btn-ghost" style="justify-content: flex-start;" onclick="LexiApp.openAdminDashboard()">
+              ${Icons.settings}<span>دخول لوحة تحكم المشرف (Admin)</span>
+            </button>
+          </div>
+        </div>
+      </div>
+      ` : ''}
+
         <!-- About App (IP Attribution) -->
       <div class="glass-card mb-md">
         <div class="settings-group" style="margin-bottom:0">
