@@ -1,14 +1,14 @@
-const CACHE_NAME = 'lexinote-v1';
+const CACHE_NAME = 'lexinote-v2';
 const ASSETS_TO_CACHE = [
-  './',
-  './index.html',
-  './css/style.css',
-  './js/db.js',
-  './js/ui.js',
-  './js/app.js',
-  './manifest.json',
-  './icons/icon-192.png',
-  './icons/icon-512.png'
+  '/',
+  '/index.html',
+  '/css/style.css',
+  '/js/db.js',
+  '/js/ui.js',
+  '/js/app.js',
+  '/manifest.json',
+  '/icons/icon-192.png',
+  '/icons/icon-512.png'
 ];
 
 // Install — cache app shell
@@ -51,7 +51,7 @@ self.addEventListener('fetch', (event) => {
         return response;
       });
     }).catch(() => {
-      return caches.match('./index.html');
+      return caches.match('/index.html');
     })
   );
 });
