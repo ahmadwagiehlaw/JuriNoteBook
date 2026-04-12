@@ -474,28 +474,127 @@ const LexiUI = (() => {
   }
 
   function renderActiveSettingsTab(tab, data) {
+    const SPECIALIZATIONS = getAllSpecs(data.customSpecs);
+    const CATEGORIES = getAllCategories(data.customCategories);
+    const allEnabled = !data.enabledSpecs || data.enabledSpecs.length === 0;
+
     switch(tab) {
       case 'general':
         return `
-          <div class="glass-card p-md">
+          <div class="glass-card mb-md p-md">
             <div class="settings-group-title">${Icons.user}<span>الملف الشخصي</span></div>
+            <p class="text-muted" style="font-size:0.82rem;margin-bottom:var(--space-md)">يظهر اسمك في الشريط الجانبي كتخصيص شخصي</p>
             <div class="form-group mb-md">
-              <label>الاسم</label>
-              <input type="text" class="input form-input" value="${data.userName || ''}" onchange="LexiApp.saveUserName(this.value)">
+              <label>الاسم / اللقب</label>
+              <input type="text" class="input form-input" id="settings-username" value="${escapeHtml(data.userName || '')}" placeholder="مثال: أحمد وجيه محمد">
             </div>
             <div class="form-group">
-              <label>التخصص الافتراضي</label>
-              <select class="select form-input" onchange="LexiApp.setDefaultSpecialization(this.value)">
-                ${['مدني', 'جنائي', 'أسرة', 'إداري', 'تجاري', 'عمالي', 'نقض'].map(s => `
-                  <option value="${s}" ${data.activeSpec === s ? 'selected' : ''}>${s}</option>
-                `).join('')}
-              </select>
+              <label>جهة العمل / المحكمة</label>
+              <div class="flex gap-sm">
+                <input type="text" class="input form-input" id="settings-workplace" value="${escapeHtml(data.workplace || '')}" placeholder="مثال: محكمة النقض">
+                <button class="btn btn-primary btn-sm" onclick="LexiApp.saveProfile()">${Icons.save}<span>حفظ</span></button>
+              </div>
             </div>
+          </div>
+
+          <!-- Specializations Management -->
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">${Icons.scale}<span>إدارة التخصصات</span></div>
+            <p class="text-muted" style="font-size:0.82rem;margin-bottom:var(--space-md)">اختر التخصصات المعروضة، أو أضف تخصصات جديدة</p>
+            <div class="spec-toggle-list mb-md">
+              ${SPECIALIZATIONS.map(spec => {
+                const isEnabled = allEnabled || data.enabledSpecs.includes(spec.id);
+                const isCustom = data.customSpecs && data.customSpecs.some(cs => cs.id === spec.id);
+                return `
+                <div class="spec-toggle-row">
+                  <label class="spec-toggle-item" data-spec="${spec.id}">
+                    <input type="checkbox" ${isEnabled ? 'checked' : ''} onchange="LexiApp.toggleSpecEnabled('${escapeHtml(spec.id)}', this.checked)">
+                    <span class="spec-toggle-dot" style="background:var(--chip-color)"></span>
+                    <span class="spec-toggle-label">${spec.icon} ${spec.label}</span>
+                  </label>
+                  ${isCustom ? `
+                    <button class="btn-icon-mini btn-edit-mini" onclick="LexiApp.editCustomSpec('${escapeHtml(spec.id)}')" title="تعديل">✏️</button>
+                    <button class="btn-icon-mini" onclick="LexiApp.deleteCustomSpec('${escapeHtml(spec.id)}')" title="حذف">×</button>
+                  ` : ''}
+                </div>`;
+              }).join('')}
+            </div>
+            <div class="flex gap-sm">
+              <input class="form-input" type="text" id="new-spec-name" placeholder="التخصص الجديد..." style="flex:1">
+              <input class="form-input" type="text" id="new-spec-icon" placeholder="أيقونة" style="width:60px;text-align:center">
+              <button class="btn btn-primary btn-sm" onclick="LexiApp.addCustomSpec()">${Icons.plus}<span>إضافة</span></button>
+            </div>
+          </div>
+
+          <!-- Default Specialization -->
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">${Icons.scale}<span>التخصص الافتراضي</span></div>
+            <div class="spec-chips">
+              ${SPECIALIZATIONS.map(spec => `
+                <button class="spec-chip ${data.activeSpec === spec.id ? 'active' : ''}" data-spec="${spec.id}" onclick="LexiApp.setDefaultSpecialization('${escapeHtml(spec.id)}')">
+                  <span class="chip-dot"></span>${spec.label}
+                </button>
+              `).join('')}
+            </div>
+          </div>
+
+          <!-- Custom Categories -->
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">${Icons.bookmark}<span>التصنيفات الرئيسية</span></div>
+            <div class="spec-toggle-list mb-md" style="max-height: 200px; overflow-y: auto;">
+              ${CATEGORIES.map(cat => {
+                const isCustom = data.customCategories && data.customCategories.includes(cat);
+                return `
+                <div class="spec-toggle-row">
+                  <label class="spec-toggle-item" style="padding:4px 8px;cursor:default;">
+                    <span class="spec-toggle-dot" style="background:var(--accent-blue)"></span>
+                    <span class="spec-toggle-label" style="margin-right:8px">${escapeHtml(cat)}</span>
+                  </label>
+                  ${isCustom ? `
+                    <button class="btn-icon-mini btn-edit-mini" onclick="LexiApp.editCustomCategory('${escapeHtml(cat)}')" title="تعديل">✏️</button>
+                    <button class="btn-icon-mini" onclick="LexiApp.deleteCustomCategory('${escapeHtml(cat)}')" title="حذف">×</button>
+                  ` : ''}
+                </div>`;
+              }).join('')}
+            </div>
+            <div class="flex gap-sm">
+              <input class="form-input" type="text" id="new-category-name" placeholder="التصنيف الجديد..." style="flex:1">
+              <button class="btn btn-primary btn-sm" onclick="LexiApp.addCustomCategory()">${Icons.plus}<span>إضافة</span></button>
+            </div>
+          </div>
+
+          <!-- Sub-Specialties -->
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">${Icons.bookmark}<span>التصنيفات الفرعية</span></div>
+            ${SPECIALIZATIONS.map(spec => {
+              const subs = data.subSpecialties.filter(s => s.specialization === spec.id);
+              if (subs.length === 0) return '';
+              return `
+                <div class="settings-item mb-md" style="flex-direction:column;align-items:stretch;gap:8px">
+                  <h4 style="font-size:0.85rem;color:var(--text-secondary)">${spec.icon} ${spec.label}</h4>
+                  <div class="flex gap-sm" style="flex-wrap:wrap">
+                    ${subs.map(sub => `
+                      <span class="note-sub-category" style="display:inline-flex;align-items:center;gap:4px">
+                        ${escapeHtml(sub.name)}
+                        <button onclick="LexiApp.deleteSubSpecialty(${sub.id})" style="background:none;border:none;color:var(--text-tertiary);cursor:pointer;padding:0;font-size:0.9rem">×</button>
+                      </span>
+                    `).join('')}
+                  </div>
+                </div>`;
+            }).join('')}
+            ${data.subSpecialties.length === 0 ? `<p class="text-muted" style="font-size:0.82rem;text-align:center;">لم تُضف تصنيفات فرعية بعد</p>` : ''}
+          </div>
+          
+          <!-- About App (IP Attribution) -->
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">ℹ️<span>حول التطبيق</span></div>
+            <p class="text-muted mb-md" style="font-size:0.85rem">معلومات التطبيق، حقوق الملكية الفكرية، والتواصل مع المطور</p>
+            <button class="btn btn-ghost" onclick="LexiApp.showAboutModal()">ℹ️<span>عرض بيانات التطبيق والملكية الفكرية</span></button>
           </div>
         `;
       case 'display':
         return `
-          <div class="glass-card p-md">
+          <div class="glass-card mb-md p-md">
             <div class="settings-group-title">${Icons.palette}<span>تخصيص المظهر</span></div>
             <div class="flex justify-between items-center">
               <span>الوضع الليلي</span>
@@ -507,24 +606,52 @@ const LexiUI = (() => {
         `;
       case 'data':
         return `
-          <div class="glass-card p-md">
-            <div class="settings-group-title">${Icons.database}<span>إدارة البيانات</span></div>
-            <div class="flex gap-sm">
-              <button class="btn btn-primary" onclick="LexiApp.exportData()">تصدير نسخة</button>
-              <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">استيراد</button>
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">${Icons.download}<span>إدارة البيانات</span></div>
+            <div class="flex gap-sm" style="flex-wrap:wrap">
+              <button class="btn btn-primary" onclick="LexiApp.exportData()">${Icons.download}<span>تصدير نسخة</span></button>
+              <button class="btn btn-ghost" onclick="document.getElementById('import-file').click()">${Icons.upload}<span>استيراد</span></button>
               <input type="file" id="import-file" style="display:none" onchange="LexiApp.importData(this)">
             </div>
           </div>
+          
+          ${data.user ? `
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">${Icons.cloud}<span>المزامنة السحابية</span></div>
+            <p class="text-muted mb-md" style="font-size:0.85rem">بياناتك متزامنة مع السحابة عبر حسابك</p>
+            <div class="flex gap-sm" style="flex-wrap:wrap">
+              <button class="btn btn-ghost" onclick="LexiApp.syncToCloud()">${Icons.upload}<span>رفع للسحابة</span></button>
+              <button class="btn btn-ghost" onclick="LexiApp.syncFromCloud()">${Icons.download}<span>تنزيل من السحابة</span></button>
+            </div>
+          </div>
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">${Icons.share}<span>مشاركة المدونة</span></div>
+            <p class="text-muted mb-md" style="font-size:0.85rem">شارك مدونتك القضائية مع فريق العمل عبر رابط</p>
+            <button class="btn btn-ghost" onclick="LexiApp.showShareModal()">${Icons.share}<span>إنشاء رابط مشاركة</span></button>
+          </div>
+          ` : `
+          <div class="glass-card mb-md p-md">
+            <div class="settings-group-title">${Icons.cloudOff}<span>الوضع المحلي</span></div>
+            <p class="text-muted mb-md" style="font-size:0.85rem">أنت تعمل بدون حساب. سجل الدخول لتفعيل المزامنة والمشاركة.</p>
+            <button class="btn btn-primary" onclick="LexiApp.goToLogin()">تسجيل الدخول</button>
+          </div>
+          `}
         `;
       case 'security':
         return `
-          <div class="glass-card p-md" style="border: 1px solid var(--accent-red)">
+          ${data.user ? `
+          <div class="glass-card mb-md p-md" style="border: 1px solid var(--accent-red)">
             <div class="settings-group-title" style="color:var(--accent-red)">${Icons.lock}<span>الأمان والخصوصية</span></div>
             <p class="text-muted mb-md">يمكنك هنا مسح جميع بياناتك المرفوعة على السحابة وإغلاق حسابك.</p>
-            <button class="btn btn-ghost" style="color:var(--accent-red)" onclick="LexiApp.promptDeleteAccount()">
-              حذف الحساب نهائياً
+            <button class="btn btn-ghost" style="color:var(--accent-red); justify-content: flex-start" onclick="LexiApp.promptDeleteAccount()">
+              ${Icons.trash}<span>حذف الحساب نهائياً</span>
             </button>
           </div>
+          ` : `
+          <div class="glass-card mb-md p-md">
+            <p class="text-muted" style="text-align:center;">إعدادات الأمان متاحة فقط بعد تسجيل الدخول.</p>
+          </div>
+          `}
         `;
     }
   }
