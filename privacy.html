@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" data-theme="dark">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#0a0e27">
+  <meta name="description" content="سياسة الخصوصية - مفكرة القاضي">
+  <meta name="author" content="مستشار/ أحمد وجيه">
+
+  <title>سياسة الخصوصية — JuriNotebook</title>
+
+  <link rel="icon" type="image/png" sizes="192x192" href="icons/icon-192.png">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;600;700;800&family=Noto+Kufi+Arabic:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="css/style.css">
+
+  <style>
+    /* Specific styles for privacy page to stand alone but match app aesthetic */
+    body {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: var(--space-xl) var(--space-md);
+      overflow-y: auto;
+    }
+
+    .privacy-container {
+      width: 100%;
+      max-width: 800px;
+      background: var(--bg-glass-strong);
+      backdrop-filter: blur(24px);
+      -webkit-backdrop-filter: blur(24px);
+      border: 1px solid var(--border-glass);
+      border-radius: var(--radius-xl);
+      padding: var(--space-2xl) var(--space-xl);
+      box-shadow: var(--shadow-lg);
+      margin-bottom: var(--space-2xl);
+    }
+
+    .privacy-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      margin-bottom: var(--space-2xl);
+      border-bottom: 1px solid var(--border-glass);
+      padding-bottom: var(--space-xl);
+    }
+
+    .privacy-logo {
+      width: 80px;
+      height: 80px;
+      border-radius: var(--radius-lg);
+      margin-bottom: var(--space-md);
+      box-shadow: var(--shadow-gold);
+    }
+
+    .privacy-header h1 {
+      font-family: var(--font-display);
+      font-size: 2rem;
+      font-weight: 800;
+      background: linear-gradient(135deg, var(--accent-gold-light), var(--accent-gold));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: var(--space-xs);
+    }
+
+    .privacy-header p {
+      color: var(--text-tertiary);
+      font-size: 0.95rem;
+      letter-spacing: 1px;
+    }
+
+    .privacy-section {
+      margin-bottom: var(--space-xl);
+    }
+
+    .privacy-section h2 {
+      font-family: var(--font-display);
+      font-size: 1.25rem;
+      color: var(--text-primary);
+      margin-bottom: var(--space-md);
+      display: flex;
+      align-items: center;
+      gap: var(--space-sm);
+    }
+
+    .privacy-section h2::before {
+      content: '';
+      width: 4px;
+      height: 20px;
+      background: var(--accent-gold);
+      border-radius: var(--radius-sm);
+    }
+
+    .privacy-section p {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      margin-bottom: var(--space-md);
+      font-size: 1rem;
+    }
+
+    .privacy-section ul {
+      color: var(--text-secondary);
+      line-height: 1.8;
+      padding-right: var(--space-lg);
+      list-style-type: disc;
+    }
+
+    .privacy-section li {
+      margin-bottom: var(--space-sm);
+    }
+
+    .privacy-section li strong {
+      color: var(--accent-gold-light);
+    }
+
+    .back-btn-container {
+      display: flex;
+      justify-content: center;
+      margin-top: var(--space-2xl);
+      padding-top: var(--space-xl);
+      border-top: 1px solid var(--border-glass);
+    }
+
+    .btn-back {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-sm);
+      padding: 12px 24px;
+      background: var(--accent-gold-dim);
+      color: var(--accent-gold-light);
+      border: 1px solid var(--border-accent);
+      border-radius: var(--radius-md);
+      font-family: var(--font-arabic);
+      font-size: 1rem;
+      font-weight: 600;
+      text-decoration: none;
+      transition: all var(--transition-fast);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-back:hover {
+      background: var(--accent-gold);
+      color: var(--text-inverse);
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-gold);
+    }
+
+    .btn-back:hover svg {
+      color: var(--text-inverse);
+    }
+
+    .btn-back svg {
+      width: 20px;
+      height: 20px;
+      transition: color var(--transition-fast);
+    }
+
+    @media (max-width: 600px) {
+      .privacy-container {
+        padding: var(--space-xl) var(--space-md);
+      }
+      .privacy-header h1 {
+        font-size: 1.5rem;
+      }
+      .privacy-section h2 {
+        font-size: 1.1rem;
+      }
+      .privacy-section p, .privacy-section ul {
+        font-size: 0.9rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="privacy-container">
+    <div class="privacy-header">
+      <img src="icons/icon-192.png" alt="JuriNotebook" class="privacy-logo">
+      <h1>سياسة الخصوصية</h1>
+      <p>تطبيق مفكرة القاضي — JuriNotebook</p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>مقدمة</h2>
+      <p>
+        مرحباً بكم في تطبيق <strong>مفكرة القاضي (JuriNotebook)</strong>. نحن نولي أهمية قصوى لخصوصية بياناتك وأمانها. تهدف سياسة الخصوصية هذه إلى توضيح كيفية جمعنا للبيانات واستخدامها وحمايتها، وذلك لضمان بيئة آمنة وموثوقة لعمل السادة القضاة والمستشارين.
+      </p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>جمع البيانات</h2>
+      <p>نقوم بجمع البيانات الأساسية الضرورية فقط لتقديم خدمات التطبيق وتحسين تجربة المستخدم:</p>
+      <ul>
+        <li><strong>معلومات الحساب:</strong> عند التسجيل السحابي، نجمع الاسم والبريد الإلكتروني. وفي وضع عدم الاتصال (المحلي)، لا يتم جمع أي بيانات شخصية وتُحفظ البيانات على جهازك فقط.</li>
+        <li><strong>بيانات المحتوى:</strong> المبادئ القانونية، السوابق القضائية، الملاحظات، وجدول الجلسات التي تدخلها وتخزنها في التطبيق (سواء سحابياً أو محلياً حسب اختيارك).</li>
+        <li><strong>البيانات التقنية:</strong> معلومات تلقائية مثل نوع الجهاز ونظام التشغيل وتفضيلات الثيم (المظهر) لتحسين أداء التطبيق وحل أي أعطال.</li>
+      </ul>
+    </div>
+
+    <div class="privacy-section">
+      <h2>استخدام البيانات</h2>
+      <p>نستخدم البيانات التي نجمعها للأغراض التالية فقط:</p>
+      <ul>
+        <li>توفير الخدمات والميزات المتاحة في التطبيق وتشغيلها بشكل آمن ومستقر.</li>
+        <li>مزامنة بيانات المفكرة عبر أجهزتك المختلفة (عند اختيارك استخدام الحساب السحابي).</li>
+        <li>الحفاظ على إعداداتك مثل اختيار التخصصات ونمط العرض واختصاراتك.</li>
+        <li>الرد على استفساراتك وتقديم الدعم الفني اللازم.</li>
+      </ul>
+    </div>
+
+    <div class="privacy-section">
+      <h2>حماية البيانات والأمان</h2>
+      <p>
+        بما أن التطبيق يتعامل مع معلومات ذات طابع قانوني وقضائي، فإننا نطبق أعلى معايير الخصوصية والحماية:
+      </p>
+      <ul>
+        <li><strong>التشفير:</strong> تشفير البيانات أثناء النقل وأثناء التخزين باستخدام خوادم وتقنيات أمان منصة (Google Firebase).</li>
+        <li><strong>قواعد الأمان:</strong> نطبق قواعد أمان صارمة تضمن عدم قدرة أي شخص مستخدم للتطبيق على الاطلاع أو التعديل إلا على بياناته الخاصة فقط وفقاً لرقم المعرف الخاص به (UID).</li>
+        <li><strong>الوضع المحلي:</strong> عند اختيار وضع "المتابعة محلياً"، لا تغادر بياناتك جهازك الشخصي أبداً، ولا نملك أي وصول إليها على الإطلاق.</li>
+      </ul>
+    </div>
+
+    <div class="privacy-section">
+      <h2>مشاركة البيانات</h2>
+      <p>
+        <strong>نلتزم التزاماً تاماً بعدم بيع، تأجير، أو مشاركة</strong> بياناتك الشخصية أو محتواك القضائي مع أي أطراف ثالثة لأي أغراض كانت دعائية أو تجارية.
+      </p>
+    </div>
+
+    <div class="privacy-section">
+      <h2>حقوق المستخدم وحذف الحساب</h2>
+      <p>
+        يتوافق التطبيق مع متطلبات الخصوصية العالمية، ويتيح لك التحكم في بياناتك:
+      </p>
+      <ul>
+        <li>الوصول والاطلاع على جميع البيانات المحفوظة وتحريرها بحرية تامة.</li>
+        <li><strong>حذف الحساب نهائياً:</strong> من خلال صفحة "الإعدادات > الحساب"، يمكنك طلب حذف حسابك نهائياً بضغطة زر. عند الحذف، يتم محو كافة بياناتك ومستنداتك المرفوعة من خوادمنا بشكل فوري وغير قابل للاسترجاع (يتوافق مع متطلبات Google Play Store و App Store).</li>
+      </ul>
+    </div>
+
+    <div class="privacy-section">
+      <h2>تواصل معنا</h2>
+      <p>
+        إذا كانت لديك أي أسئلة أو مقترحات حول هذه السياسة، يمكنك التواصل معنا في أي وقت من خلال وسائل التواصل المتاحة.
+      </p>
+    </div>
+
+    <div class="back-btn-container">
+      <a href="index.html" class="btn-back">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="5" y1="12" x2="19" y2="12"></line>
+          <polyline points="12 5 19 12 12 19"></polyline>
+        </svg>
+        العودة للتطبيق
+      </a>
+    </div>
+  </div>
+
+</body>
+</html>
