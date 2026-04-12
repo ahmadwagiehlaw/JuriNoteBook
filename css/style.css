@@ -1915,3 +1915,37 @@ body::before {
 .hidden {
   display: none !important;
 }
+
+/* تنسيق تبويبات الإعدادات */
+.settings-tabs {
+  display: flex;
+  gap: 5px;
+  padding: 5px;
+  margin-bottom: 20px;
+  overflow-x: auto;
+}
+.tab-btn {
+  flex: 1;
+  padding: 10px;
+  border: none;
+  background: transparent;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: 8px;
+  transition: 0.3s;
+  white-space: nowrap;
+}
+.tab-btn.active {
+  background: var(--bg-hover);
+  color: var(--accent-primary);
+}
+/* إصلاح نهائي لأي أيقونة SVG طائشة */
+svg {
+  flex-shrink: 0;
+  max-width: 24px;
+  max-height: 24px;
+}

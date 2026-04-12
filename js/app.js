@@ -7,6 +7,7 @@ const LexiApp = (() => {
     // ── State ──
     let state = {
         currentView: 'home',
+        settingsTab: 'general',
         activeSpecialization: 'مدني',
         notes: [],
         subSpecialties: [],
@@ -80,6 +81,9 @@ const LexiApp = (() => {
                     state.user = user;
                     if (user) {
                         state.isAdmin = await FirebaseService.checkIsAdmin();
+                        // Show/Hide bottom nav admin icon
+                        const navAdmin = document.getElementById('nav-admin');
+                        if (navAdmin) navAdmin.style.display = state.isAdmin ? 'flex' : 'none';
                         hideAuthScreen();
                         try {
                             await FirebaseService.saveUserProfile();
@@ -374,7 +378,7 @@ const LexiApp = (() => {
         sidebar.innerHTML = LexiUI.renderSidebar(
             state.activeSpecialization, state.currentView, noteCounts, state.user,
             state.enabledSpecs, state.userName, state.customSpecs, state.activeCategory,
-            state.customCategories, state.workplace
+            state.customCategories, state.workplace, state.isAdmin
         );
 
         let html = '';
@@ -388,6 +392,7 @@ const LexiApp = (() => {
                 break;
             case 'settings':
                 html = LexiUI.renderSettingsPage(
+                    state.settingsTab,
                     { activeSpecialization: state.activeSpecialization },
                     state.subSpecialties,
                     state.user,
@@ -395,9 +400,11 @@ const LexiApp = (() => {
                     state.userName,
                     state.customSpecs,
                     state.customCategories,
-                    state.workplace,
-                    state.isAdmin
+                    state.workplace
                 );
+                break;
+            case 'admin':
+                html = LexiUI.renderAdminDashboard(state.adminUsers || []);
                 break;
         }
         mainContent.innerHTML = html;
@@ -416,10 +423,31 @@ const LexiApp = (() => {
     //   NAVIGATION
     // ══════════════════════════════════════
 
-    function navigate(view) {
+    function setSettingsTab(tab) {
+        state.settingsTab = tab;
+        render();
+    }
+
+    async function navigate(view) {
         state.currentView = view;
         state.searchQuery = '';
         if (view !== 'add') state.editingNote = null;
+        
+        if (view === 'admin') {
+            try {
+                if (!state.adminUsers) {
+                    state.adminUsers = await FirebaseService.getAllUsersForAdmin();
+                } else {
+                    FirebaseService.getAllUsersForAdmin().then(users => {
+                        state.adminUsers = users;
+                        if (state.currentView === 'admin') render();
+                    }).catch(e => console.error(e));
+                }
+            } catch(e) {
+                LexiUI.showToast('فشل جلب بيانات المستخدمين', 'error');
+            }
+        }
+        
         toggleSidebar(false);
         render();
         window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -989,7 +1017,7 @@ const LexiApp = (() => {
         showRegister, showLogin, skipAuth, handleSignOut, goToLogin,
         promptDeleteAccount, deleteUserByAdmin,
         // Theme
-        toggleTheme, setTheme,
+        toggleTheme, setTheme, setSettingsTab,
         // Specialization
         setSpecialization, setDefaultSpecialization,
         // Sidebar
